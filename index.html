@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JerryW 贪吃蛇</title>
     <style>
-        /* ===== 全局重置 & 字体 ===== */
+        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -32,7 +32,7 @@
             align-items: center;
         }
 
-        /* 顶栏 */
+        /* ===== 顶栏 ===== */
         .header {
             width: 100%;
             display: flex;
@@ -40,6 +40,14 @@
             align-items: center;
             margin-bottom: 18px;
             padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .header h1 {
@@ -51,46 +59,65 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            white-space: nowrap;
         }
 
-        .score-box {
-            background: #0f3460;
-            padding: 8px 22px;
-            border-radius: 40px;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
-            color: #fff;
+        .level-info {
+            color: #c0d0e0;
+            font-size: 18px;
             font-weight: 600;
-            font-size: 20px;
-            letter-spacing: 0.5px;
+            background: #0f3460;
+            padding: 4px 18px;
+            border-radius: 30px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .level-info span {
+            color: #ffd700;
+        }
+
+        .progress-info {
+            color: #c0d0e0;
+            font-size: 18px;
+            font-weight: 600;
+            background: #0f3460;
+            padding: 4px 18px;
+            border-radius: 30px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .progress-info span {
+            color: #4dabf7;
+        }
+
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .score-box span {
-            color: #ffd700;
-            font-size: 24px;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        /* 画布容器 */
+        /* ===== 画布容器 ===== */
         .canvas-container {
             position: relative;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 0 0 3px #0f3460, 0 12px 28px rgba(0, 0, 0, 0.5);
             background: #0d1b2a;
+            width: 500px;
+            height: 500px;
         }
 
         canvas {
             display: block;
-            width: 500px;
-            height: 500px;
+            width: 100%;
+            height: 100%;
             background: #0d1b2a;
         }
 
-        /* 暂停遮罩 */
+        /* ===== 暂停遮罩 ===== */
         .pause-overlay {
             position: absolute;
             top: 0;
@@ -132,22 +159,22 @@
             }
         }
 
-        /* 游戏结束遮罩 */
+        /* ===== 通用遮罩 (GameOver / 过关 / 通关) ===== */
         .game-over-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             border-radius: 16px;
-            transition: opacity 0.25s ease;
             z-index: 10;
+            transition: opacity 0.3s ease;
         }
 
         .game-over-overlay.show {
@@ -155,28 +182,29 @@
         }
 
         .game-over-overlay h2 {
-            color: #ff6b6b;
-            font-size: 42px;
+            font-size: 46px;
             font-weight: 800;
-            text-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             letter-spacing: 2px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            padding: 0 20px;
         }
 
-        .game-over-overlay .final-score {
+        .game-over-overlay .sub-text {
             color: #f0f0f0;
             font-size: 20px;
             font-weight: 400;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
 
-        .game-over-overlay .final-score strong {
+        .game-over-overlay .sub-text strong {
             color: #ffd700;
             font-size: 28px;
         }
 
-        .btn {
+        .game-over-overlay .btn {
             background: linear-gradient(145deg, #f7971e, #f5a623);
             border: none;
             padding: 12px 40px;
@@ -190,17 +218,30 @@
             letter-spacing: 0.5px;
         }
 
-        .btn:hover {
+        .game-over-overlay .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 0 #b36b0e, 0 12px 28px rgba(247, 151, 30, 0.4);
         }
 
-        .btn:active {
+        .game-over-overlay .btn:active {
             transform: translateY(4px);
             box-shadow: 0 2px 0 #b36b0e, 0 8px 20px rgba(247, 151, 30, 0.3);
         }
 
-        /* 底部控制 */
+        .game-over-overlay .btn-secondary {
+            background: #1e3a5f;
+            box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            margin-top: 10px;
+        }
+
+        .game-over-overlay .btn-secondary:hover {
+            background: #264d7a;
+            box-shadow: 0 6px 0 #0f1f33, 0 10px 24px rgba(0, 0, 0, 0.4);
+            color: #fff;
+        }
+
+        /* ===== 底部控制 ===== */
         .footer-controls {
             width: 100%;
             display: flex;
@@ -219,83 +260,37 @@
             letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .key-hint kbd {
             background: #0f3460;
             color: #e0e0e0;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             font-family: inherit;
             box-shadow: inset 0 -2px 0 #1a1a2e;
         }
 
-        .restart-btn {
-            background: #1e3a5f;
-            box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
-            color: #e0e0e0;
-            padding: 8px 24px;
-            font-size: 16px;
+        .key-hint .sep {
+            color: #667799;
         }
 
-        .restart-btn:hover {
-            background: #264d7a;
-            box-shadow: 0 6px 0 #0f1f33, 0 10px 24px rgba(0, 0, 0, 0.4);
-            color: #fff;
-        }
-
-        .restart-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        /* 暂停按钮 */
-        .pause-btn {
-            background: #2a4a6a;
-            box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
-            color: #e0e0e0;
-            padding: 8px 24px;
-            font-size: 16px;
-            min-width: 80px;
-        }
-
-        .pause-btn:hover {
-            background: #3a5a7a;
-            box-shadow: 0 6px 0 #0f1f33, 0 10px 24px rgba(0, 0, 0, 0.4);
-            color: #fff;
-        }
-
-        .pause-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .pause-btn.is-paused {
-            background: #4a6a3a;
-            box-shadow: 0 4px 0 #2a4a1a, 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .pause-btn.is-paused:hover {
-            background: #5a7a4a;
-            box-shadow: 0 6px 0 #2a4a1a, 0 10px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        /* 速度滑块 */
+        /* 速度控制 */
         .speed-control {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             color: #c0d0e0;
             font-size: 15px;
             font-weight: 500;
         }
 
         .speed-control input[type="range"] {
-            width: 130px;
+            width: 120px;
             height: 4px;
             -webkit-appearance: none;
             background: #2a4a6a;
@@ -333,59 +328,124 @@
             font-size: 15px;
         }
 
-        /* 响应式 */
-        @media (max-width: 580px) {
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.08s ease-in;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .btn-pause {
+            background: #2a4a6a;
+            box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            min-width: 80px;
+        }
+
+        .btn-pause:hover {
+            background: #3a5a7a;
+            box-shadow: 0 6px 0 #0f1f33, 0 10px 24px rgba(0, 0, 0, 0.4);
+            color: #fff;
+        }
+
+        .btn-pause:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-pause.is-paused {
+            background: #4a6a3a;
+            box-shadow: 0 4px 0 #2a4a1a, 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-pause.is-paused:hover {
+            background: #5a7a4a;
+            box-shadow: 0 6px 0 #2a4a1a, 0 10px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-restart {
+            background: #1e3a5f;
+            box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+        }
+
+        .btn-restart:hover {
+            background: #264d7a;
+            box-shadow: 0 6px 0 #0f1f33, 0 10px 24px rgba(0, 0, 0, 0.4);
+            color: #fff;
+        }
+
+        .btn-restart:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 620px) {
             .game-wrapper {
-                padding: 20px 16px 28px;
-                border-radius: 20px;
-                width: 96vw;
+                padding: 16px 12px 20px;
+                border-radius: 18px;
+                width: 98vw;
             }
 
-            canvas {
+            .canvas-container {
                 width: 100%;
                 height: auto;
                 aspect-ratio: 1/1;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+
+            .header-left {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-right {
+                justify-content: center;
             }
 
             .header h1 {
                 font-size: 22px;
             }
 
-            .score-box {
-                font-size: 16px;
-                padding: 6px 16px;
-            }
-            .score-box span {
-                font-size: 20px;
-                min-width: 30px;
-            }
-
-            .game-over-overlay h2 {
-                font-size: 30px;
-            }
-
-            .btn {
-                padding: 10px 28px;
-                font-size: 17px;
+            .level-info,
+            .progress-info {
+                font-size: 15px;
+                padding: 3px 12px;
             }
 
             .footer-controls {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 10px;
+                gap: 8px;
             }
 
             .key-hint {
                 justify-content: center;
-                flex-wrap: wrap;
-                gap: 8px 14px;
-                font-size: 14px;
+                font-size: 13px;
+                gap: 6px;
             }
 
-            .restart-btn,
-            .pause-btn {
-                width: 100%;
-                text-align: center;
+            .key-hint kbd {
+                font-size: 12px;
+                padding: 2px 8px;
             }
 
             .speed-control {
@@ -397,8 +457,26 @@
                 width: 100px;
             }
 
+            .btn-group {
+                justify-content: center;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 6px 16px;
+            }
+
+            .game-over-overlay h2 {
+                font-size: 32px;
+            }
+
             .pause-overlay .pause-text {
                 font-size: 32px;
+            }
+
+            .game-over-overlay .btn {
+                font-size: 17px;
+                padding: 10px 28px;
             }
         }
 
@@ -406,23 +484,21 @@
             .header h1 {
                 font-size: 18px;
             }
-            .score-box {
-                font-size: 14px;
-                padding: 4px 12px;
-            }
-            .score-box span {
-                font-size: 17px;
-                min-width: 24px;
+            .level-info,
+            .progress-info {
+                font-size: 13px;
+                padding: 2px 10px;
             }
             .game-over-overlay h2 {
-                font-size: 24px;
+                font-size: 26px;
+            }
+            .speed-label {
+                min-width: 56px;
+                font-size: 13px;
             }
             .btn {
-                padding: 8px 20px;
-                font-size: 15px;
-            }
-            .pause-overlay .pause-text {
-                font-size: 26px;
+                font-size: 13px;
+                padding: 5px 14px;
             }
         }
     </style>
@@ -430,15 +506,19 @@
 <body>
 
     <div class="game-wrapper">
-        <!-- 顶栏 -->
+        <!-- ===== 顶栏 ===== -->
         <div class="header">
-            <h1>JerryW</h1>
-            <div class="score-box">
-                🍎 <span id="scoreDisplay">0</span>
+            <div class="header-left">
+                <h1>JerryW</h1>
+                <div class="level-info">🏁 第 <span id="levelDisplay">1</span>/10 关</div>
+                <div class="progress-info">🍎 <span id="progressDisplay">0</span>/<span id="targetDisplay">3</span></div>
+            </div>
+            <div class="header-right">
+                <!-- 可扩展 -->
             </div>
         </div>
 
-        <!-- 画布 + 遮罩 -->
+        <!-- ===== 画布 ===== -->
         <div class="canvas-container">
             <canvas id="gameCanvas" width="500" height="500"></canvas>
 
@@ -447,44 +527,45 @@
                 <div class="pause-text">⏸ 已暂停</div>
             </div>
 
-            <!-- 游戏结束遮罩 -->
+            <!-- 通用遮罩 (GameOver / 过关 / 通关) -->
             <div class="game-over-overlay" id="gameOverOverlay">
                 <h2 id="overlayTitle">GAMEOVER</h2>
-                <div class="final-score">
+                <div class="sub-text" id="overlaySub">
                     得分 &nbsp; <strong id="finalScore">0</strong>
                 </div>
-                <button class="btn" id="restartOverlayBtn">🔄 再来一局</button>
+                <button class="btn" id="overlayBtn">🔄 再来一局</button>
+                <button class="btn btn-secondary" id="overlayBtnSecondary" style="display:none;">▶ 下一关</button>
             </div>
         </div>
 
-        <!-- 底部 -->
+        <!-- ===== 底部控制 ===== -->
         <div class="footer-controls">
             <div class="key-hint">
-                <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd>
-                <span style="color:#667799;">或</span>
-                <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>
-                <span style="color:#667799; margin-left:4px;">|</span>
+                <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+                <span class="sep">或</span>
+                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+                <span class="sep">|</span>
                 <kbd>空格</kbd> <span style="color:#667799;">暂停</span>
             </div>
 
-            <!-- 速度滑块 -->
             <div class="speed-control">
                 <span>⚡ 速度</span>
                 <input type="range" id="speedSlider" min="50" max="500" value="250" step="5" />
                 <span class="speed-label" id="speedDisplay">250</span>
             </div>
 
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn pause-btn" id="pauseBtn">⏸ 暂停</button>
-                <button class="btn restart-btn" id="restartBtn">⟳ 重新开始</button>
+            <div class="btn-group">
+                <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
+                <button class="btn btn-restart" id="restartBtn">⟳ 重新开始</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================================
-        //  贪吃蛇 — 手动调速版 + 暂停功能
-        // ============================================================
+        // ================================================================
+        //  JerryW 贪吃蛇 — 10关挑战版
+        //  功能：方块蛇 + 蓝色食物 + 10关递增目标 + 速度调节 + 暂停
+        // ================================================================
 
         (function() {
             'use strict';
@@ -493,13 +574,18 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             const scoreSpan = document.getElementById('scoreDisplay');
-            const finalScoreSpan = document.getElementById('finalScore');
+            const levelDisplay = document.getElementById('levelDisplay');
+            const progressDisplay = document.getElementById('progressDisplay');
+            const targetDisplay = document.getElementById('targetDisplay');
+            const finalScore = document.getElementById('finalScore');
             const overlay = document.getElementById('gameOverOverlay');
             const overlayTitle = document.getElementById('overlayTitle');
-            const restartOverlayBtn = document.getElementById('restartOverlayBtn');
-            const restartBtn = document.getElementById('restartBtn');
+            const overlaySub = document.getElementById('overlaySub');
+            const overlayBtn = document.getElementById('overlayBtn');
+            const overlayBtnSecondary = document.getElementById('overlayBtnSecondary');
             const pauseBtn = document.getElementById('pauseBtn');
             const pauseOverlay = document.getElementById('pauseOverlay');
+            const restartBtn = document.getElementById('restartBtn');
             const speedSlider = document.getElementById('speedSlider');
             const speedDisplay = document.getElementById('speedDisplay');
 
@@ -514,35 +600,60 @@
                 RIGHT: { x: 1, y: 0 }
             };
 
+            // ---------- 关卡配置 (10关，目标递增) ----------
+            const LEVELS = [
+                { target: 3 },
+                { target: 5 },
+                { target: 7 },
+                { target: 10 },
+                { target: 13 },
+                { target: 16 },
+                { target: 20 },
+                { target: 24 },
+                { target: 28 },
+                { target: 33 }
+            ];
+
+            const TOTAL_LEVELS = LEVELS.length;
+
             // ---------- 状态 ----------
             let snake = [];
             let food = { x: 8, y: 10 };
             let direction = DIR.RIGHT;
             let nextDirection = DIR.RIGHT;
-            let score = 0;
+            let score = 0; // 总吃苹果数
+
+            let currentLevel = 0; // 0-based
+            let levelProgress = 0; // 当前关卡已吃数量
+
             let gameRunning = false;
             let gameLoopInterval = null;
             let animationFrame = null;
             let gameOverFlag = false;
 
-            // 暂停状态
             let isPaused = false;
-
-            // 速度 (毫秒/帧)
             let moveIntervalMs = 250;
 
-            // ---------- 更新速度显示（带图标） ----------
+            // 关卡过渡标志 (防止重复触发)
+            let isLevelTransitioning = false;
+
+            // ---------- 速度显示 ----------
             function updateSpeedDisplay() {
                 let icon = '';
-                if (moveIntervalMs <= 200) {
-                    icon = '✈️ ';
-                } else if (moveIntervalMs >= 350) {
-                    icon = '🐢 ';
-                }
+                if (moveIntervalMs <= 200) icon = '✈️ ';
+                else if (moveIntervalMs >= 350) icon = '🐢 ';
                 speedDisplay.textContent = icon + moveIntervalMs;
             }
 
-            // ---------- 更新暂停按钮和遮罩 ----------
+            // ---------- 更新关卡UI ----------
+            function updateLevelUI() {
+                levelDisplay.textContent = currentLevel + 1;
+                const target = LEVELS[currentLevel].target;
+                targetDisplay.textContent = target;
+                progressDisplay.textContent = levelProgress;
+            }
+
+            // ---------- 更新暂停UI ----------
             function updatePauseUI() {
                 if (isPaused) {
                     pauseBtn.textContent = '▶ 继续';
@@ -555,28 +666,22 @@
                 }
             }
 
-            // ---------- 暂停切换 ----------
-            function togglePause() {
-                if (!gameRunning || gameOverFlag) return;
-                isPaused = !isPaused;
-                updatePauseUI();
-
-                if (isPaused) {
-                    // 暂停：清除计时器
-                    if (gameLoopInterval) {
-                        clearInterval(gameLoopInterval);
-                        gameLoopInterval = null;
-                    }
-                } else {
-                    // 继续：重启计时器
-                    if (!gameLoopInterval) {
-                        startLoop();
-                    }
-                }
+            // ---------- 显示遮罩 (通用) ----------
+            function showOverlay(title, subText, isWin, showNextBtn = false) {
+                overlayTitle.textContent = title;
+                overlayTitle.style.color = isWin ? '#ffd700' : '#ff6b6b';
+                overlaySub.innerHTML = subText;
+                overlayBtn.style.display = isWin ? 'none' : 'inline-block';
+                overlayBtnSecondary.style.display = (isWin && showNextBtn) ? 'inline-block' : 'none';
+                overlay.classList.add('show');
             }
 
-            // ---------- 初始化 / 重置 ----------
-            function initGame() {
+            function hideOverlay() {
+                overlay.classList.remove('show');
+            }
+
+            // ---------- 初始化蛇 ----------
+            function resetSnake() {
                 snake = [
                     { x: 9, y: 10 },
                     { x: 8, y: 10 },
@@ -585,37 +690,6 @@
                 ];
                 direction = DIR.RIGHT;
                 nextDirection = DIR.RIGHT;
-                score = 0;
-                gameOverFlag = false;
-                isPaused = false;
-                updateScoreDisplay();
-                updatePauseUI();
-
-                moveIntervalMs = parseInt(speedSlider.value, 10);
-                updateSpeedDisplay();
-
-                generateFood();
-                overlay.classList.remove('show');
-                overlayTitle.textContent = 'GAMEOVER';
-
-                if (gameLoopInterval) {
-                    clearInterval(gameLoopInterval);
-                    gameLoopInterval = null;
-                }
-                if (animationFrame) {
-                    cancelAnimationFrame(animationFrame);
-                    animationFrame = null;
-                }
-
-                gameRunning = true;
-                startLoop();
-                renderLoop();
-            }
-
-            // ---------- 启动循环 ----------
-            function startLoop() {
-                if (gameLoopInterval) clearInterval(gameLoopInterval);
-                gameLoopInterval = setInterval(gameTick, moveIntervalMs);
             }
 
             // ---------- 生成食物 ----------
@@ -625,13 +699,11 @@
                     food = { x: -1, y: -1 };
                     return;
                 }
-
-                const occupied = new Set(snake.map(cell => `${cell.x},${cell.y}`));
+                const occupied = new Set(snake.map(c => `${c.x},${c.y}`));
                 if (occupied.size === totalCells) {
                     food = { x: -1, y: -1 };
                     return;
                 }
-
                 let attempts = 0;
                 const maxAttempts = 2000;
                 let newFood = null;
@@ -644,7 +716,6 @@
                     }
                     attempts++;
                 }
-
                 if (!newFood) {
                     for (let y = 0; y < GRID_SIZE; y++) {
                         for (let x = 0; x < GRID_SIZE; x++) {
@@ -656,13 +727,133 @@
                         if (newFood) break;
                     }
                 }
-
                 food = newFood || { x: 0, y: 0 };
             }
 
-            // ---------- 游戏 tick ----------
+            // ---------- 重置关卡 ----------
+            function resetLevel() {
+                resetSnake();
+                generateFood();
+                levelProgress = 0;
+                updateLevelUI();
+                hideOverlay();
+                isLevelTransitioning = false;
+            }
+
+            // ---------- 进入下一关 ----------
+            function goToNextLevel() {
+                if (currentLevel + 1 >= TOTAL_LEVELS) {
+                    // 所有关卡完成！
+                    gameRunning = false;
+                    gameOverFlag = true;
+                    if (gameLoopInterval) {
+                        clearInterval(gameLoopInterval);
+                        gameLoopInterval = null;
+                    }
+                    showOverlay(
+                        '🎉 恭喜通关！',
+                        `全部 <strong>${TOTAL_LEVELS}</strong> 关完成！总得分 <strong>${score}</strong>`,
+                        true,
+                        false
+                    );
+                    return;
+                }
+
+                currentLevel++;
+                resetLevel();
+                // 如果游戏在运行，重启循环
+                if (gameRunning && !gameOverFlag) {
+                    if (gameLoopInterval) {
+                        clearInterval(gameLoopInterval);
+                        gameLoopInterval = null;
+                    }
+                    startLoop();
+                }
+                // 更新UI
+                updateLevelUI();
+                // 显示进入下一关的提示 (短暂显示后自动消失)
+                showOverlay(
+                    `🎯 第 ${currentLevel + 1} 关`,
+                    `目标：吃掉 <strong>${LEVELS[currentLevel].target}</strong> 个苹果`,
+                    true,
+                    false
+                );
+                // 1.2秒后自动隐藏
+                setTimeout(() => {
+                    if (!gameOverFlag && gameRunning) {
+                        hideOverlay();
+                    }
+                }, 1200);
+                isLevelTransitioning = false;
+            }
+
+            // ---------- 检查过关 ----------
+            function checkLevelComplete() {
+                const target = LEVELS[currentLevel].target;
+                if (levelProgress >= target) {
+                    if (isLevelTransitioning) return;
+                    isLevelTransitioning = true;
+                    // 停止循环
+                    if (gameLoopInterval) {
+                        clearInterval(gameLoopInterval);
+                        gameLoopInterval = null;
+                    }
+                    // 显示 "你赢了！"
+                    showOverlay(
+                        '🎉 你赢了！',
+                        `第 <strong>${currentLevel + 1}</strong> 关完成！已吃 ${levelProgress} 个苹果`,
+                        true,
+                        true
+                    );
+                    // 下一关按钮显示
+                    overlayBtnSecondary.style.display = 'inline-block';
+                    overlayBtnSecondary.textContent = '▶ 下一关';
+                    // 点击下一关
+                    overlayBtnSecondary.onclick = function() {
+                        if (!isLevelTransitioning) return;
+                        goToNextLevel();
+                    };
+                    // 也可自动进入下一关 (3秒后)
+                    setTimeout(() => {
+                        if (isLevelTransitioning && !gameOverFlag) {
+                            goToNextLevel();
+                        }
+                    }, 2800);
+                    return true;
+                }
+                return false;
+            }
+
+            // ---------- 游戏结束 ----------
+            function endGame() {
+                if (gameOverFlag) return;
+                gameRunning = false;
+                gameOverFlag = true;
+                if (gameLoopInterval) {
+                    clearInterval(gameLoopInterval);
+                    gameLoopInterval = null;
+                }
+                if (isPaused) {
+                    isPaused = false;
+                    updatePauseUI();
+                }
+                finalScore.textContent = score;
+                showOverlay(
+                    '💀 GAMEOVER',
+                    `总得分 <strong>${score}</strong> | 到达第 <strong>${currentLevel + 1}</strong> 关`,
+                    false,
+                    false
+                );
+                overlayBtn.style.display = 'inline-block';
+                overlayBtn.textContent = '🔄 再来一局';
+                overlayBtn.onclick = function() {
+                    restartGame();
+                };
+            }
+
+            // ---------- 游戏Tick ----------
             function gameTick() {
-                if (!gameRunning || gameOverFlag || isPaused) return;
+                if (!gameRunning || gameOverFlag || isPaused || isLevelTransitioning) return;
 
                 direction = { ...nextDirection };
 
@@ -679,6 +870,7 @@
                     newSnake.pop();
                 }
 
+                // 碰撞检测
                 const headCollision = (() => {
                     if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
                         return true;
@@ -700,31 +892,35 @@
 
                 if (isEating) {
                     score++;
-                    updateScoreDisplay();
+                    levelProgress++;
+                    updateLevelUI();
                     generateFood();
 
+                    // 检查是否过关
+                    if (checkLevelComplete()) {
+                        return;
+                    }
+
                     if (food.x === -1 && food.y === -1) {
+                        // 蛇占满所有格子 → 胜利
                         gameRunning = false;
                         gameOverFlag = true;
                         if (gameLoopInterval) {
                             clearInterval(gameLoopInterval);
                             gameLoopInterval = null;
                         }
-                        overlayTitle.textContent = 'YOU WIN!';
-                        finalScoreSpan.textContent = score;
-                        overlay.classList.add('show');
+                        showOverlay(
+                            '🎉 完美！',
+                            `你填满了整个棋盘！总得分 <strong>${score}</strong>`,
+                            true,
+                            false
+                        );
                         return;
                     }
                 }
             }
 
-            // ---------- 渲染循环 ----------
-            function renderLoop() {
-                drawCanvas();
-                animationFrame = requestAnimationFrame(renderLoop);
-            }
-
-            // ---------- 绘图 (方块版) ----------
+            // ---------- 渲染 ----------
             function drawCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -742,37 +938,37 @@
                     ctx.stroke();
                 }
 
-                // ---- 食物 (蓝色方块) ----
+                // 食物 (蓝色方块)
                 if (food && food.x >= 0 && food.y >= 0) {
                     const fx = food.x * CELL_SIZE;
                     const fy = food.y * CELL_SIZE;
-                    const padding = 2;
-                    const size = CELL_SIZE - padding * 2;
+                    const pad = 2;
+                    const size = CELL_SIZE - pad * 2;
 
                     ctx.shadowColor = 'rgba(50, 150, 255, 0.5)';
                     ctx.shadowBlur = 14;
                     ctx.fillStyle = '#4dabf7';
-                    ctx.fillRect(fx + padding, fy + padding, size, size);
+                    ctx.fillRect(fx + pad, fy + pad, size, size);
 
                     ctx.shadowBlur = 0;
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-                    ctx.fillRect(fx + padding + 2, fy + padding + 2, size * 0.4, size * 0.3);
+                    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                    ctx.fillRect(fx + pad + 2, fy + pad + 2, size * 0.4, size * 0.3);
 
                     ctx.strokeStyle = '#1c7ed6';
                     ctx.lineWidth = 1.5;
-                    ctx.strokeRect(fx + padding, fy + padding, size, size);
+                    ctx.strokeRect(fx + pad, fy + pad, size, size);
                     ctx.shadowBlur = 0;
                 }
 
-                // ---- 蛇 (绿色方块) ----
+                // 蛇 (绿色方块)
                 if (snake.length === 0) return;
 
                 for (let i = 0; i < snake.length; i++) {
                     const seg = snake[i];
                     const x = seg.x * CELL_SIZE;
                     const y = seg.y * CELL_SIZE;
-                    const padding = i === 0 ? 1 : 2;
-                    const size = CELL_SIZE - padding * 2;
+                    const pad = i === 0 ? 1 : 2;
+                    const size = CELL_SIZE - pad * 2;
 
                     let color;
                     if (i === 0) {
@@ -783,16 +979,16 @@
                         color = `rgb(40, ${g}, 70)`;
                     }
 
-                    ctx.shadowColor = i === 0 ? 'rgba(80, 200, 80, 0.5)' : 'rgba(0,0,0,0.2)';
+                    ctx.shadowColor = i === 0 ? 'rgba(80,200,80,0.5)' : 'rgba(0,0,0,0.2)';
                     ctx.shadowBlur = i === 0 ? 12 : 4;
 
                     ctx.fillStyle = color;
-                    ctx.fillRect(x + padding, y + padding, size, size);
+                    ctx.fillRect(x + pad, y + pad, size, size);
 
                     ctx.shadowBlur = 0;
                     ctx.strokeStyle = i === 0 ? '#2b8a3e' : '#1a4a2a';
                     ctx.lineWidth = 1;
-                    ctx.strokeRect(x + padding, y + padding, size, size);
+                    ctx.strokeRect(x + pad, y + pad, size, size);
 
                     // 头部眼睛
                     if (i === 0) {
@@ -826,51 +1022,106 @@
                         ctx.fillRect(ex1, ey1, eyeSize, eyeSize);
                         ctx.fillRect(ex2, ey2, eyeSize, eyeSize);
                         ctx.fillStyle = '#1a1a2e';
-                        const pupilOff = 1.5;
-                        ctx.fillRect(ex1 + d.x * pupilOff, ey1 + d.y * pupilOff, 2, 2);
-                        ctx.fillRect(ex2 + d.x * pupilOff, ey2 + d.y * pupilOff, 2, 2);
+                        const po = 1.5;
+                        ctx.fillRect(ex1 + d.x * po, ey1 + d.y * po, 2, 2);
+                        ctx.fillRect(ex2 + d.x * po, ey2 + d.y * po, 2, 2);
                     }
                 }
                 ctx.shadowBlur = 0;
             }
 
-            // ---------- 更新分数 ----------
-            function updateScoreDisplay() {
-                scoreSpan.textContent = score;
+            function renderLoop() {
+                drawCanvas();
+                animationFrame = requestAnimationFrame(renderLoop);
             }
 
-            // ---------- 结束游戏 ----------
-            function endGame() {
-                if (gameOverFlag) return;
-                gameRunning = false;
-                gameOverFlag = true;
-                if (gameLoopInterval) {
-                    clearInterval(gameLoopInterval);
-                    gameLoopInterval = null;
-                }
-                // 如果暂停中，取消暂停状态
+            // ---------- 循环控制 ----------
+            function startLoop() {
+                if (gameLoopInterval) clearInterval(gameLoopInterval);
+                gameLoopInterval = setInterval(gameTick, moveIntervalMs);
+            }
+
+            // ---------- 暂停切换 ----------
+            function togglePause() {
+                if (!gameRunning || gameOverFlag || isLevelTransitioning) return;
+                isPaused = !isPaused;
+                updatePauseUI();
+
                 if (isPaused) {
-                    isPaused = false;
-                    updatePauseUI();
+                    if (gameLoopInterval) {
+                        clearInterval(gameLoopInterval);
+                        gameLoopInterval = null;
+                    }
+                } else {
+                    if (!gameLoopInterval) {
+                        startLoop();
+                    }
                 }
-                finalScoreSpan.textContent = score;
-                overlayTitle.textContent = 'GAMEOVER';
-                overlay.classList.add('show');
             }
 
             // ---------- 方向控制 ----------
             function setDirection(newDir) {
-                if (!gameRunning || gameOverFlag || isPaused) return;
-                if (direction.x === -newDir.x && direction.y === -newDir.y) {
-                    return;
-                }
+                if (!gameRunning || gameOverFlag || isPaused || isLevelTransitioning) return;
+                if (direction.x === -newDir.x && direction.y === -newDir.y) return;
                 nextDirection = { ...newDir };
             }
 
-            // ---------- 键盘 ----------
+            // ---------- 速度调节 ----------
+            function updateSpeed() {
+                const val = parseInt(speedSlider.value, 10);
+                moveIntervalMs = val;
+                updateSpeedDisplay();
+                if (gameRunning && !gameOverFlag && !isPaused && !isLevelTransitioning) {
+                    if (gameLoopInterval) {
+                        clearInterval(gameLoopInterval);
+                        gameLoopInterval = null;
+                    }
+                    startLoop();
+                }
+            }
+
+            // ---------- 重新开始 ----------
+            function restartGame() {
+                if (gameLoopInterval) {
+                    clearInterval(gameLoopInterval);
+                    gameLoopInterval = null;
+                }
+                // 重置所有
+                currentLevel = 0;
+                score = 0;
+                gameOverFlag = false;
+                isPaused = false;
+                isLevelTransitioning = false;
+                hideOverlay();
+                updatePauseUI();
+                resetLevel();
+                gameRunning = true;
+                startLoop();
+                // 更新UI
+                updateLevelUI();
+                // 显示第一关提示
+                setTimeout(() => {
+                    if (gameRunning && !gameOverFlag) {
+                        showOverlay(
+                            `🎯 第 1 关`,
+                            `目标：吃掉 <strong>${LEVELS[0].target}</strong> 个苹果`,
+                            true,
+                            false
+                        );
+                        setTimeout(() => {
+                            if (!gameOverFlag && gameRunning) {
+                                hideOverlay();
+                            }
+                        }, 1200);
+                    }
+                }, 200);
+            }
+
+            // ---------- 键盘事件 ----------
             function handleKeydown(e) {
                 const key = e.key;
-                const controlKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'W', 'A', 'a', 's', 'S', 'd', 'D',
+                const controlKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+                    'w', 'W', 'A', 'a', 's', 'S', 'd', 'D',
                     ' ', 'Space'
                 ];
                 if (controlKeys.includes(key)) {
@@ -911,41 +1162,46 @@
                 }
             }
 
-            // ---------- 速度调节 ----------
-            function updateSpeed() {
-                const val = parseInt(speedSlider.value, 10);
-                moveIntervalMs = val;
-                updateSpeedDisplay();
-                if (gameRunning && !gameOverFlag && !isPaused) {
-                    if (gameLoopInterval) {
-                        clearInterval(gameLoopInterval);
-                        gameLoopInterval = null;
-                    }
-                    startLoop();
-                }
-            }
-
-            // ---------- 重新开始 ----------
-            function restartGame() {
-                if (gameLoopInterval) {
-                    clearInterval(gameLoopInterval);
-                    gameLoopInterval = null;
-                }
-                initGame();
-            }
-
             // ---------- 启动 ----------
             function startGame() {
                 window.addEventListener('keydown', handleKeydown);
+
                 restartBtn.addEventListener('click', restartGame);
-                restartOverlayBtn.addEventListener('click', restartGame);
+
                 pauseBtn.addEventListener('click', togglePause);
 
                 speedSlider.addEventListener('input', updateSpeed);
                 moveIntervalMs = parseInt(speedSlider.value, 10);
                 updateSpeedDisplay();
 
-                initGame();
+                // 初始化
+                currentLevel = 0;
+                score = 0;
+                gameOverFlag = false;
+                isPaused = false;
+                isLevelTransitioning = false;
+                resetLevel();
+                gameRunning = true;
+                startLoop();
+                renderLoop();
+                updateLevelUI();
+
+                // 显示第一关提示
+                setTimeout(() => {
+                    if (gameRunning && !gameOverFlag) {
+                        showOverlay(
+                            `🎯 第 1 关`,
+                            `目标：吃掉 <strong>${LEVELS[0].target}</strong> 个苹果`,
+                            true,
+                            false
+                        );
+                        setTimeout(() => {
+                            if (!gameOverFlag && gameRunning) {
+                                hideOverlay();
+                            }
+                        }, 1200);
+                    }
+                }, 300);
             }
 
             window.addEventListener('DOMContentLoaded', startGame);
