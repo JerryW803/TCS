@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JerryW 贪吃蛇</title>
+    <title>王语聪的游戏网站</title>
     <style>
         /* ===== 全局重置 ===== */
         * {
@@ -48,10 +48,11 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #e0e0e0;
             letter-spacing: 1px;
@@ -225,7 +226,7 @@
 
         .game-over-overlay .btn:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 #b36b0e, 0 8px 20px rgba(247, 151, 30, 0.3);
+            box-shadow: 0 2px 0 #b36b0e, 0 6px 16px rgba(247, 151, 30, 0.3);
         }
 
         .game-over-overlay .btn-secondary {
@@ -422,7 +423,8 @@
             }
 
             .header h1 {
-                font-size: 22px;
+                font-size: 20px;
+                white-space: normal;
             }
 
             .level-info,
@@ -482,7 +484,7 @@
 
         @media (max-width: 400px) {
             .header h1 {
-                font-size: 18px;
+                font-size: 17px;
             }
             .level-info,
             .progress-info {
@@ -509,7 +511,7 @@
         <!-- ===== 顶栏 ===== -->
         <div class="header">
             <div class="header-left">
-                <h1>JerryW</h1>
+                <h1>王语聪的游戏网站</h1>
                 <div class="level-info">🏁 第 <span id="levelDisplay">1</span>/10 关</div>
                 <div class="progress-info">🍎 <span id="progressDisplay">0</span>/<span id="targetDisplay">3</span></div>
             </div>
@@ -563,7 +565,7 @@
 
     <script>
         // ================================================================
-        //  JerryW 贪吃蛇 — 10关挑战版
+        //  贪吃蛇 — 10关挑战版
         //  功能：方块蛇 + 蓝色食物 + 10关递增目标 + 速度调节 + 暂停
         // ================================================================
 
