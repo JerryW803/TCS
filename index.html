@@ -2,10 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>王语聪的游戏网站</title>
     <!-- 标签页图标：🐍 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👋</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>" />
     <style>
         /* ===== 全局重置 ===== */
         * {
@@ -22,16 +22,20 @@
             background: #1a1a2e;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             user-select: none;
+            touch-action: pan-y;
+            /* 允许垂直滚动，防止水平滚动干扰 */
         }
 
         .game-wrapper {
             background: #16213e;
-            padding: 30px 40px 40px;
+            padding: 20px 24px 24px;
             border-radius: 28px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 2px #0f3460 inset;
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 600px;
+            width: 100%;
         }
 
         /* ===== 顶栏 ===== */
@@ -40,24 +44,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             padding: 0 4px;
             flex-wrap: wrap;
-            gap: 8px 12px;
+            gap: 6px 10px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .header h1 {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
             color: #e0e0e0;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             background: linear-gradient(135deg, #f7971e, #ffd200);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -67,10 +71,10 @@
 
         .level-info {
             color: #c0d0e0;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
             background: #0f3460;
-            padding: 4px 18px;
+            padding: 3px 14px;
             border-radius: 30px;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
             white-space: nowrap;
@@ -82,10 +86,10 @@
 
         .progress-info {
             color: #c0d0e0;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
             background: #0f3460;
-            padding: 4px 18px;
+            padding: 3px 14px;
             border-radius: 30px;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
             white-space: nowrap;
@@ -98,7 +102,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
@@ -109,8 +113,9 @@
             overflow: hidden;
             box-shadow: 0 0 0 3px #0f3460, 0 12px 28px rgba(0, 0, 0, 0.5);
             background: #0d1b2a;
-            width: 500px;
-            height: 500px;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1/1;
         }
 
         canvas {
@@ -118,6 +123,7 @@
             width: 100%;
             height: 100%;
             background: #0d1b2a;
+            touch-action: none;
         }
 
         /* ===== 暂停遮罩 ===== */
@@ -143,7 +149,7 @@
 
         .pause-overlay .pause-text {
             color: #ffd700;
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 800;
             letter-spacing: 6px;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
@@ -162,7 +168,7 @@
             }
         }
 
-        /* ===== 通用遮罩 (GameOver / 过关 / 通关) ===== */
+        /* ===== 通用遮罩 ===== */
         .game-over-overlay {
             position: absolute;
             top: 0;
@@ -185,34 +191,34 @@
         }
 
         .game-over-overlay h2 {
-            font-size: 46px;
+            font-size: 38px;
             font-weight: 800;
             margin-bottom: 4px;
             letter-spacing: 2px;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            padding: 0 20px;
+            padding: 0 16px;
         }
 
         .game-over-overlay .sub-text {
             color: #f0f0f0;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 400;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             letter-spacing: 0.5px;
         }
 
         .game-over-overlay .sub-text strong {
             color: #ffd700;
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .game-over-overlay .btn {
             background: linear-gradient(145deg, #f7971e, #f5a623);
             border: none;
-            padding: 12px 40px;
+            padding: 10px 34px;
             border-radius: 50px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #1a1a2e;
             cursor: pointer;
@@ -235,7 +241,7 @@
             background: #1e3a5f;
             box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
             color: #e0e0e0;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .game-over-overlay .btn-secondary:hover {
@@ -248,31 +254,111 @@
         .footer-controls {
             width: 100%;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 18px;
-            padding: 0 4px;
+            flex-direction: column;
             gap: 10px;
+            margin-top: 14px;
+            padding: 0 2px;
+        }
+
+        /* ---- 触控方向区 (摇杆) ---- */
+        .touch-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 0;
+            touch-action: none;
+            -webkit-touch-callout: none;
+        }
+
+        .touch-grid {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px 60px;
+            gap: 4px;
+            touch-action: none;
+        }
+
+        .touch-btn {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+            background: #1e3a5f;
+            color: #e0e0e0;
+            font-size: 26px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0f1f33, 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.06s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-btn:active,
+        .touch-btn.active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #0f1f33, 0 4px 10px rgba(0, 0, 0, 0.3);
+            background: #2a5a8a;
+        }
+
+        .touch-btn .arrow {
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        /* 方向定位 */
+        .btn-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .btn-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .btn-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        .btn-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* ---- 底部控制行 (速度 + 按钮) ---- */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 8px 12px;
+            padding: 2px 0;
         }
 
         .key-hint {
             color: #8899bb;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 400;
             letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .key-hint kbd {
             background: #0f3460;
             color: #e0e0e0;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             font-family: inherit;
             box-shadow: inset 0 -2px 0 #1a1a2e;
@@ -282,18 +368,19 @@
             color: #667799;
         }
 
-        /* 速度控制 */
         .speed-control {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: #c0d0e0;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .speed-control input[type="range"] {
-            width: 120px;
+            width: 100px;
             height: 4px;
             -webkit-appearance: none;
             background: #2a4a6a;
@@ -321,28 +408,28 @@
         }
 
         .speed-label {
-            min-width: 70px;
+            min-width: 56px;
             text-align: center;
             background: #0f3460;
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 20px;
             font-weight: 600;
             color: #ffd700;
-            font-size: 15px;
+            font-size: 14px;
         }
 
-        /* 按钮组 */
         .btn-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
             border: none;
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 50px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.08s ease-in;
@@ -354,7 +441,7 @@
             background: #2a4a6a;
             box-shadow: 0 4px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
             color: #e0e0e0;
-            min-width: 80px;
+            min-width: 72px;
         }
 
         .btn-pause:hover {
@@ -398,111 +485,187 @@
         /* ===== 响应式 ===== */
         @media (max-width: 620px) {
             .game-wrapper {
-                padding: 16px 12px 20px;
-                border-radius: 18px;
-                width: 98vw;
-            }
-
-            .canvas-container {
-                width: 100%;
-                height: auto;
-                aspect-ratio: 1/1;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 6px;
-            }
-
-            .header-left {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .header-right {
-                justify-content: center;
+                padding: 12px 12px 16px;
+                border-radius: 20px;
+                width: 100vw;
+                max-width: 100%;
             }
 
             .header h1 {
-                font-size: 20px;
-                white-space: normal;
-            }
-
-            .level-info,
-            .progress-info {
-                font-size: 15px;
-                padding: 3px 12px;
-            }
-
-            .footer-controls {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-
-            .key-hint {
-                justify-content: center;
-                font-size: 13px;
-                gap: 6px;
-            }
-
-            .key-hint kbd {
-                font-size: 12px;
-                padding: 2px 8px;
-            }
-
-            .speed-control {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .speed-control input[type="range"] {
-                width: 100px;
-            }
-
-            .btn-group {
-                justify-content: center;
-            }
-
-            .btn {
-                font-size: 14px;
-                padding: 6px 16px;
-            }
-
-            .game-over-overlay h2 {
-                font-size: 32px;
-            }
-
-            .pause-overlay .pause-text {
-                font-size: 32px;
-            }
-
-            .game-over-overlay .btn {
-                font-size: 17px;
-                padding: 10px 28px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .header h1 {
-                font-size: 17px;
+                font-size: 18px;
             }
             .level-info,
             .progress-info {
                 font-size: 13px;
                 padding: 2px 10px;
             }
-            .game-over-overlay h2 {
-                font-size: 26px;
+
+            .touch-grid {
+                grid-template-columns: 52px 52px 52px;
+                grid-template-rows: 52px 52px 52px;
+                gap: 4px;
+            }
+
+            .touch-btn {
+                border-radius: 14px;
+                font-size: 22px;
+            }
+
+            .controls-row {
+                gap: 6px 8px;
+            }
+            .key-hint {
+                font-size: 12px;
+                gap: 4px;
+            }
+            .key-hint kbd {
+                font-size: 11px;
+                padding: 1px 6px;
+            }
+            .speed-control {
+                font-size: 13px;
+            }
+            .speed-control input[type="range"] {
+                width: 80px;
             }
             .speed-label {
-                min-width: 56px;
                 font-size: 13px;
+                min-width: 48px;
+                padding: 1px 8px;
             }
             .btn {
                 font-size: 13px;
                 padding: 5px 14px;
+            }
+            .btn-pause {
+                min-width: 64px;
+            }
+
+            .game-over-overlay h2 {
+                font-size: 30px;
+            }
+            .pause-overlay .pause-text {
+                font-size: 30px;
+            }
+            .game-over-overlay .btn {
+                font-size: 16px;
+                padding: 8px 24px;
+            }
+            .game-over-overlay .sub-text {
+                font-size: 16px;
+            }
+            .game-over-overlay .sub-text strong {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            .level-info,
+            .progress-info {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+            .touch-grid {
+                grid-template-columns: 44px 44px 44px;
+                grid-template-rows: 44px 44px 44px;
+                gap: 3px;
+            }
+            .touch-btn {
+                border-radius: 12px;
+                font-size: 18px;
+            }
+            .speed-control input[type="range"] {
+                width: 64px;
+            }
+            .speed-label {
+                font-size: 12px;
+                min-width: 40px;
+                padding: 1px 6px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            .btn-pause {
+                min-width: 56px;
+            }
+            .game-over-overlay h2 {
+                font-size: 24px;
+            }
+            .pause-overlay .pause-text {
+                font-size: 24px;
+            }
+            .game-over-overlay .btn {
+                font-size: 14px;
+                padding: 6px 18px;
+            }
+            .game-over-overlay .sub-text {
+                font-size: 14px;
+            }
+            .game-over-overlay .sub-text strong {
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 621px) {
+            .touch-grid {
+                grid-template-columns: 64px 64px 64px;
+                grid-template-rows: 64px 64px 64px;
+                gap: 5px;
+            }
+            .touch-btn {
+                border-radius: 18px;
+                font-size: 30px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 600px) {
+            .game-wrapper {
+                padding: 10px 16px 12px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                max-width: 100%;
+                border-radius: 16px;
+            }
+            .header {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            .canvas-container {
+                width: 45vh;
+                max-width: 400px;
+                flex-shrink: 0;
+            }
+            .footer-controls {
+                width: auto;
+                flex: 1;
+                min-width: 180px;
+                margin-top: 0;
+                padding-left: 12px;
+            }
+            .touch-grid {
+                grid-template-columns: 40px 40px 40px;
+                grid-template-rows: 40px 40px 40px;
+                gap: 3px;
+            }
+            .touch-btn {
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+            .key-hint {
+                font-size: 11px;
+            }
+            .speed-control input[type="range"] {
+                width: 80px;
             }
         }
     </style>
@@ -517,9 +680,7 @@
                 <div class="level-info">🏁 第 <span id="levelDisplay">1</span>/10 关</div>
                 <div class="progress-info">🍎 <span id="progressDisplay">0</span>/<span id="targetDisplay">3</span></div>
             </div>
-            <div class="header-right">
-                <!-- 可扩展 -->
-            </div>
+            <div class="header-right"></div>
         </div>
 
         <!-- ===== 画布 ===== -->
@@ -531,7 +692,7 @@
                 <div class="pause-text">⏸ 已暂停</div>
             </div>
 
-            <!-- 通用遮罩 (GameOver / 过关 / 通关) -->
+            <!-- 通用遮罩 -->
             <div class="game-over-overlay" id="gameOverOverlay">
                 <h2 id="overlayTitle">GAMEOVER</h2>
                 <div class="sub-text" id="overlaySub">
@@ -544,31 +705,51 @@
 
         <!-- ===== 底部控制 ===== -->
         <div class="footer-controls">
-            <div class="key-hint">
-                <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
-                <span class="sep">或</span>
-                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
-                <span class="sep">|</span>
-                <kbd>空格</kbd> <span style="color:#667799;">暂停</span>
+            <!-- 触控方向 (摇杆) -->
+            <div class="touch-controls">
+                <div class="touch-grid" id="touchGrid">
+                    <button class="touch-btn btn-up" data-dir="up" aria-label="上">
+                        <span class="arrow">↑</span>
+                    </button>
+                    <button class="touch-btn btn-left" data-dir="left" aria-label="左">
+                        <span class="arrow">←</span>
+                    </button>
+                    <button class="touch-btn btn-down" data-dir="down" aria-label="下">
+                        <span class="arrow">↓</span>
+                    </button>
+                    <button class="touch-btn btn-right" data-dir="right" aria-label="右">
+                        <span class="arrow">→</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="speed-control">
-                <span>⚡ 速度</span>
-                <input type="range" id="speedSlider" min="50" max="500" value="250" step="5" />
-                <span class="speed-label" id="speedDisplay">250</span>
-            </div>
+            <!-- 控制行 -->
+            <div class="controls-row">
+                <div class="key-hint">
+                    <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+                    <span class="sep">或</span>
+                    <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+                    <span class="sep">|</span>
+                    <kbd>空格</kbd> <span style="color:#667799;">暂停</span>
+                </div>
 
-            <div class="btn-group">
-                <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
-                <button class="btn btn-restart" id="restartBtn">⟳ 重新开始</button>
+                <div class="speed-control">
+                    <span>⚡ 速度</span>
+                    <input type="range" id="speedSlider" min="50" max="500" value="250" step="5" />
+                    <span class="speed-label" id="speedDisplay">250</span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
+                    <button class="btn btn-restart" id="restartBtn">⟳ 重新开始</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // ================================================================
-        //  贪吃蛇 — 10关挑战版
-        //  功能：方块蛇 + 蓝色食物 + 10关递增目标 + 速度调节 + 暂停
+        //  贪吃蛇 — 10关挑战版 + 触控摇杆
         // ================================================================
 
         (function() {
@@ -593,6 +774,9 @@
             const speedSlider = document.getElementById('speedSlider');
             const speedDisplay = document.getElementById('speedDisplay');
 
+            // 方向按钮
+            const touchBtns = document.querySelectorAll('.touch-btn');
+
             // ---------- 常量 ----------
             const GRID_SIZE = 20;
             const CELL_SIZE = canvas.width / GRID_SIZE;
@@ -604,7 +788,14 @@
                 RIGHT: { x: 1, y: 0 }
             };
 
-            // ---------- 关卡配置 (10关，目标递增) ----------
+            const DIR_MAP = {
+                'up': DIR.UP,
+                'down': DIR.DOWN,
+                'left': DIR.LEFT,
+                'right': DIR.RIGHT
+            };
+
+            // ---------- 关卡配置 ----------
             const LEVELS = [
                 { target: 3 },
                 { target: 5 },
@@ -617,7 +808,6 @@
                 { target: 28 },
                 { target: 33 }
             ];
-
             const TOTAL_LEVELS = LEVELS.length;
 
             // ---------- 状态 ----------
@@ -625,23 +815,18 @@
             let food = { x: 8, y: 10 };
             let direction = DIR.RIGHT;
             let nextDirection = DIR.RIGHT;
-            let score = 0; // 总吃苹果数
-
-            let currentLevel = 0; // 0-based
-            let levelProgress = 0; // 当前关卡已吃数量
-
+            let score = 0;
+            let currentLevel = 0;
+            let levelProgress = 0;
             let gameRunning = false;
             let gameLoopInterval = null;
             let animationFrame = null;
             let gameOverFlag = false;
-
             let isPaused = false;
             let moveIntervalMs = 250;
-
-            // 关卡过渡标志 (防止重复触发)
             let isLevelTransitioning = false;
 
-            // ---------- 速度显示 ----------
+            // ---------- UI更新 ----------
             function updateSpeedDisplay() {
                 let icon = '';
                 if (moveIntervalMs <= 200) icon = '✈️ ';
@@ -649,7 +834,6 @@
                 speedDisplay.textContent = icon + moveIntervalMs;
             }
 
-            // ---------- 更新关卡UI ----------
             function updateLevelUI() {
                 levelDisplay.textContent = currentLevel + 1;
                 const target = LEVELS[currentLevel].target;
@@ -657,7 +841,6 @@
                 progressDisplay.textContent = levelProgress;
             }
 
-            // ---------- 更新暂停UI ----------
             function updatePauseUI() {
                 if (isPaused) {
                     pauseBtn.textContent = '▶ 继续';
@@ -670,7 +853,6 @@
                 }
             }
 
-            // ---------- 显示遮罩 (通用) ----------
             function showOverlay(title, subText, isWin, showNextBtn = false) {
                 overlayTitle.textContent = title;
                 overlayTitle.style.color = isWin ? '#ffd700' : '#ff6b6b';
@@ -684,7 +866,7 @@
                 overlay.classList.remove('show');
             }
 
-            // ---------- 初始化蛇 ----------
+            // ---------- 游戏逻辑 ----------
             function resetSnake() {
                 snake = [
                     { x: 9, y: 10 },
@@ -696,7 +878,6 @@
                 nextDirection = DIR.RIGHT;
             }
 
-            // ---------- 生成食物 ----------
             function generateFood() {
                 const totalCells = GRID_SIZE * GRID_SIZE;
                 if (snake.length >= totalCells) {
@@ -734,7 +915,6 @@
                 food = newFood || { x: 0, y: 0 };
             }
 
-            // ---------- 重置关卡 ----------
             function resetLevel() {
                 resetSnake();
                 generateFood();
@@ -744,10 +924,8 @@
                 isLevelTransitioning = false;
             }
 
-            // ---------- 进入下一关 ----------
             function goToNextLevel() {
                 if (currentLevel + 1 >= TOTAL_LEVELS) {
-                    // 所有关卡完成！
                     gameRunning = false;
                     gameOverFlag = true;
                     if (gameLoopInterval) {
@@ -762,10 +940,8 @@
                     );
                     return;
                 }
-
                 currentLevel++;
                 resetLevel();
-                // 如果游戏在运行，重启循环
                 if (gameRunning && !gameOverFlag) {
                     if (gameLoopInterval) {
                         clearInterval(gameLoopInterval);
@@ -773,16 +949,13 @@
                     }
                     startLoop();
                 }
-                // 更新UI
                 updateLevelUI();
-                // 显示进入下一关的提示 (短暂显示后自动消失)
                 showOverlay(
                     `🎯 第 ${currentLevel + 1} 关`,
                     `目标：吃掉 <strong>${LEVELS[currentLevel].target}</strong> 个苹果`,
                     true,
                     false
                 );
-                // 1.2秒后自动隐藏
                 setTimeout(() => {
                     if (!gameOverFlag && gameRunning) {
                         hideOverlay();
@@ -791,33 +964,27 @@
                 isLevelTransitioning = false;
             }
 
-            // ---------- 检查过关 ----------
             function checkLevelComplete() {
                 const target = LEVELS[currentLevel].target;
                 if (levelProgress >= target) {
                     if (isLevelTransitioning) return;
                     isLevelTransitioning = true;
-                    // 停止循环
                     if (gameLoopInterval) {
                         clearInterval(gameLoopInterval);
                         gameLoopInterval = null;
                     }
-                    // 显示 "你赢了！"
                     showOverlay(
                         '🎉 你赢了！',
                         `第 <strong>${currentLevel + 1}</strong> 关完成！已吃 ${levelProgress} 个苹果`,
                         true,
                         true
                     );
-                    // 下一关按钮显示
                     overlayBtnSecondary.style.display = 'inline-block';
                     overlayBtnSecondary.textContent = '▶ 下一关';
-                    // 点击下一关
                     overlayBtnSecondary.onclick = function() {
                         if (!isLevelTransitioning) return;
                         goToNextLevel();
                     };
-                    // 也可自动进入下一关 (3秒后)
                     setTimeout(() => {
                         if (isLevelTransitioning && !gameOverFlag) {
                             goToNextLevel();
@@ -828,7 +995,6 @@
                 return false;
             }
 
-            // ---------- 游戏结束 ----------
             function endGame() {
                 if (gameOverFlag) return;
                 gameRunning = false;
@@ -874,7 +1040,6 @@
                     newSnake.pop();
                 }
 
-                // 碰撞检测
                 const headCollision = (() => {
                     if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
                         return true;
@@ -900,13 +1065,11 @@
                     updateLevelUI();
                     generateFood();
 
-                    // 检查是否过关
                     if (checkLevelComplete()) {
                         return;
                     }
 
                     if (food.x === -1 && food.y === -1) {
-                        // 蛇占满所有格子 → 胜利
                         gameRunning = false;
                         gameOverFlag = true;
                         if (gameLoopInterval) {
@@ -928,7 +1091,6 @@
             function drawCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // 网格
                 ctx.strokeStyle = '#1e3349';
                 ctx.lineWidth = 0.6;
                 for (let i = 0; i <= GRID_SIZE; i++) {
@@ -942,7 +1104,7 @@
                     ctx.stroke();
                 }
 
-                // 食物 (蓝色方块)
+                // 食物
                 if (food && food.x >= 0 && food.y >= 0) {
                     const fx = food.x * CELL_SIZE;
                     const fy = food.y * CELL_SIZE;
@@ -964,7 +1126,7 @@
                     ctx.shadowBlur = 0;
                 }
 
-                // 蛇 (绿色方块)
+                // 蛇
                 if (snake.length === 0) return;
 
                 for (let i = 0; i < snake.length; i++) {
@@ -994,7 +1156,7 @@
                     ctx.lineWidth = 1;
                     ctx.strokeRect(x + pad, y + pad, size, size);
 
-                    // 头部眼睛
+                    // 眼睛
                     if (i === 0) {
                         ctx.fillStyle = '#f0f0f0';
                         const eyeSize = 4;
@@ -1045,7 +1207,14 @@
                 gameLoopInterval = setInterval(gameTick, moveIntervalMs);
             }
 
-            // ---------- 暂停切换 ----------
+            // ---------- 方向控制 ----------
+            function setDirection(newDir) {
+                if (!gameRunning || gameOverFlag || isPaused || isLevelTransitioning) return;
+                if (direction.x === -newDir.x && direction.y === -newDir.y) return;
+                nextDirection = { ...newDir };
+            }
+
+            // ---------- 暂停 ----------
             function togglePause() {
                 if (!gameRunning || gameOverFlag || isLevelTransitioning) return;
                 isPaused = !isPaused;
@@ -1063,14 +1232,7 @@
                 }
             }
 
-            // ---------- 方向控制 ----------
-            function setDirection(newDir) {
-                if (!gameRunning || gameOverFlag || isPaused || isLevelTransitioning) return;
-                if (direction.x === -newDir.x && direction.y === -newDir.y) return;
-                nextDirection = { ...newDir };
-            }
-
-            // ---------- 速度调节 ----------
+            // ---------- 速度 ----------
             function updateSpeed() {
                 const val = parseInt(speedSlider.value, 10);
                 moveIntervalMs = val;
@@ -1090,7 +1252,6 @@
                     clearInterval(gameLoopInterval);
                     gameLoopInterval = null;
                 }
-                // 重置所有
                 currentLevel = 0;
                 score = 0;
                 gameOverFlag = false;
@@ -1101,9 +1262,8 @@
                 resetLevel();
                 gameRunning = true;
                 startLoop();
-                // 更新UI
                 updateLevelUI();
-                // 显示第一关提示
+
                 setTimeout(() => {
                     if (gameRunning && !gameOverFlag) {
                         showOverlay(
@@ -1121,7 +1281,7 @@
                 }, 200);
             }
 
-            // ---------- 键盘事件 ----------
+            // ---------- 键盘 ----------
             function handleKeydown(e) {
                 const key = e.key;
                 const controlKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
@@ -1166,17 +1326,71 @@
                 }
             }
 
+            // ---------- 触控绑定 ----------
+            function setupTouchControls() {
+                touchBtns.forEach(btn => {
+                    const dir = btn.dataset.dir;
+                    if (!dir) return;
+
+                    // 触摸事件
+                    btn.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.classList.add('active');
+                        const d = DIR_MAP[dir];
+                        if (d) setDirection(d);
+                    }, { passive: false });
+
+                    btn.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.classList.remove('active');
+                    }, { passive: false });
+
+                    btn.addEventListener('touchcancel', function(e) {
+                        this.classList.remove('active');
+                    }, { passive: false });
+
+                    // 鼠标事件（桌面兼容）
+                    btn.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        this.classList.add('active');
+                        const d = DIR_MAP[dir];
+                        if (d) setDirection(d);
+                    });
+
+                    btn.addEventListener('mouseup', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('active');
+                    });
+
+                    btn.addEventListener('mouseleave', function(e) {
+                        this.classList.remove('active');
+                    });
+                });
+
+                // 防止触摸时页面滚动
+                const grid = document.getElementById('touchGrid');
+                if (grid) {
+                    grid.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                    }, { passive: false });
+                }
+            }
+
             // ---------- 启动 ----------
             function startGame() {
                 window.addEventListener('keydown', handleKeydown);
 
                 restartBtn.addEventListener('click', restartGame);
-
                 pauseBtn.addEventListener('click', togglePause);
 
                 speedSlider.addEventListener('input', updateSpeed);
                 moveIntervalMs = parseInt(speedSlider.value, 10);
                 updateSpeedDisplay();
+
+                // 触控
+                setupTouchControls();
 
                 // 初始化
                 currentLevel = 0;
@@ -1190,7 +1404,6 @@
                 renderLoop();
                 updateLevelUI();
 
-                // 显示第一关提示
                 setTimeout(() => {
                     if (gameRunning && !gameOverFlag) {
                         showOverlay(
