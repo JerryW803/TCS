@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>王语聪的游戏网站</title>
-    <!-- 标签页图标：🐍 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>" />
+    <!-- 默认 favicon（手机模式） -->
+    <link rel="icon" id="dynamicFavicon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>" />
     <style>
         /* ===== 全局重置 ===== */
         * {
@@ -23,9 +23,16 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             user-select: none;
             touch-action: pan-y;
-            /* 允许垂直滚动，防止水平滚动干扰 */
+            transition: transform 0.3s ease;
         }
 
+        /* 横屏模式 (电脑) — 旋转整个容器 */
+        body.landscape-mode .game-wrapper {
+            transform: rotate(0deg);
+            /* 由 JS 控制宽高 */;
+        }
+
+        /* 更可靠的横屏处理：通过 JS 设置样式 */
         .game-wrapper {
             background: #16213e;
             padding: 20px 24px 24px;
@@ -36,6 +43,28 @@
             align-items: center;
             max-width: 600px;
             width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        /* 横屏时适配 */
+        body.landscape-mode .game-wrapper {
+            max-width: 90vh;
+            width: 90vh;
+            padding: 12px 16px 16px;
+        }
+
+        body.landscape-mode .canvas-container {
+            max-width: 70vh;
+        }
+
+        body.landscape-mode .touch-grid {
+            grid-template-columns: 44px 44px 44px;
+            grid-template-rows: 44px 44px 44px;
+        }
+
+        body.landscape-mode .touch-btn {
+            font-size: 18px;
+            border-radius: 12px;
         }
 
         /* ===== 顶栏 ===== */
@@ -313,7 +342,6 @@
             line-height: 1;
         }
 
-        /* 方向定位 */
         .btn-up {
             grid-column: 2;
             grid-row: 1;
@@ -331,7 +359,7 @@
             grid-row: 2;
         }
 
-        /* ---- 底部控制行 (速度 + 按钮) ---- */
+        /* ---- 控制行 ---- */
         .controls-row {
             display: flex;
             flex-wrap: wrap;
@@ -482,6 +510,34 @@
             box-shadow: 0 2px 0 #0f1f33, 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
+        /* 模式切换按钮 */
+        .btn-mode {
+            background: #3a3a5a;
+            box-shadow: 0 4px 0 #1a1a2a, 0 6px 16px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            min-width: 64px;
+        }
+
+        .btn-mode:hover {
+            background: #4a4a7a;
+            box-shadow: 0 6px 0 #1a1a2a, 0 10px 24px rgba(0, 0, 0, 0.4);
+            color: #fff;
+        }
+
+        .btn-mode:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #1a1a2a, 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-mode.active-mode {
+            background: #4a6a3a;
+            box-shadow: 0 4px 0 #2a4a1a, 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-mode.active-mode:hover {
+            background: #5a7a4a;
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 620px) {
             .game-wrapper {
@@ -622,51 +678,14 @@
             }
         }
 
+        /* 横屏适配 (通过JS添加类) */
         @media (orientation: landscape) and (max-height: 600px) {
-            .game-wrapper {
-                padding: 10px 16px 12px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                max-width: 100%;
-                border-radius: 16px;
-            }
-            .header {
-                width: 100%;
-                margin-bottom: 8px;
-            }
-            .canvas-container {
-                width: 45vh;
-                max-width: 400px;
-                flex-shrink: 0;
-            }
-            .footer-controls {
-                width: auto;
-                flex: 1;
-                min-width: 180px;
-                margin-top: 0;
-                padding-left: 12px;
-            }
-            .touch-grid {
-                grid-template-columns: 40px 40px 40px;
-                grid-template-rows: 40px 40px 40px;
-                gap: 3px;
-            }
-            .touch-btn {
-                border-radius: 10px;
-                font-size: 16px;
-            }
-            .controls-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 4px;
-            }
-            .key-hint {
-                font-size: 11px;
-            }
-            .speed-control input[type="range"] {
-                width: 80px;
-            }
+            /* 针对小屏横屏，由JS控制，这里不覆盖 */
+        }
+
+        /* 横屏模式下的尺寸 (由JS动态设置) */
+        body.landscape-mode .game-wrapper {
+            transform: rotate(0deg);
         }
     </style>
 </head>
@@ -740,6 +759,9 @@
                 </div>
 
                 <div class="btn-group">
+                    <!-- 模式切换按钮 -->
+                    <button class="btn btn-mode" id="modePhone">📱 手机</button>
+                    <button class="btn btn-mode" id="modePC">🖥️ 电脑</button>
                     <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
                     <button class="btn btn-restart" id="restartBtn">⟳ 重新开始</button>
                 </div>
@@ -749,7 +771,7 @@
 
     <script>
         // ================================================================
-        //  贪吃蛇 — 10关挑战版 + 触控摇杆
+        //  贪吃蛇 — 10关挑战版 + 触控摇杆 + 模式切换
         // ================================================================
 
         (function() {
@@ -773,6 +795,11 @@
             const restartBtn = document.getElementById('restartBtn');
             const speedSlider = document.getElementById('speedSlider');
             const speedDisplay = document.getElementById('speedDisplay');
+            const faviconLink = document.getElementById('dynamicFavicon');
+
+            // 模式按钮
+            const modePhoneBtn = document.getElementById('modePhone');
+            const modePCBtn = document.getElementById('modePC');
 
             // 方向按钮
             const touchBtns = document.querySelectorAll('.touch-btn');
@@ -825,6 +852,34 @@
             let isPaused = false;
             let moveIntervalMs = 250;
             let isLevelTransitioning = false;
+
+            // ---------- 模式管理 ----------
+            let currentMode = 'phone'; // 'phone' 或 'pc'
+
+            function setMode(mode) {
+                currentMode = mode;
+                const body = document.body;
+                if (mode === 'pc') {
+                    body.classList.add('landscape-mode');
+                    // 尝试锁定横屏
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(() => {});
+                    }
+                    // 更新favicon
+                    faviconLink.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥️</text></svg>";
+                    // 按钮高亮
+                    modePhoneBtn.classList.remove('active-mode');
+                    modePCBtn.classList.add('active-mode');
+                } else {
+                    body.classList.remove('landscape-mode');
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('portrait').catch(() => {});
+                    }
+                    faviconLink.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>";
+                    modePCBtn.classList.remove('active-mode');
+                    modePhoneBtn.classList.add('active-mode');
+                }
+            }
 
             // ---------- UI更新 ----------
             function updateSpeedDisplay() {
@@ -1332,7 +1387,6 @@
                     const dir = btn.dataset.dir;
                     if (!dir) return;
 
-                    // 触摸事件
                     btn.addEventListener('touchstart', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1351,7 +1405,6 @@
                         this.classList.remove('active');
                     }, { passive: false });
 
-                    // 鼠标事件（桌面兼容）
                     btn.addEventListener('mousedown', function(e) {
                         e.preventDefault();
                         this.classList.add('active');
@@ -1369,13 +1422,24 @@
                     });
                 });
 
-                // 防止触摸时页面滚动
                 const grid = document.getElementById('touchGrid');
                 if (grid) {
                     grid.addEventListener('touchstart', function(e) {
                         e.preventDefault();
                     }, { passive: false });
                 }
+            }
+
+            // ---------- 模式切换绑定 ----------
+            function setupModeButtons() {
+                modePhoneBtn.addEventListener('click', function() {
+                    setMode('phone');
+                });
+                modePCBtn.addEventListener('click', function() {
+                    setMode('pc');
+                });
+                // 初始为手机模式
+                setMode('phone');
             }
 
             // ---------- 启动 ----------
@@ -1392,7 +1456,10 @@
                 // 触控
                 setupTouchControls();
 
-                // 初始化
+                // 模式
+                setupModeButtons();
+
+                // 初始化游戏
                 currentLevel = 0;
                 score = 0;
                 gameOverFlag = false;
